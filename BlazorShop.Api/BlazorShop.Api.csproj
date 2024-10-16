@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Context\" />
+    <ProjectReference Include="..\BlazorShop.Models\BlazorShop.Models.csproj" />
   </ItemGroup>
 
 </Project>
