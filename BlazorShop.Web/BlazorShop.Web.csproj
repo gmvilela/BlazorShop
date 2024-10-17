@@ -15,4 +15,11 @@
     <ProjectReference Include="..\BlazorShop.Models\BlazorShop.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Imagens\Calcados\" />
+    <Folder Include="wwwroot\Imagens\Beleza\" />
+    <Folder Include="wwwroot\Imagens\Eletronicos\" />
+    <Folder Include="wwwroot\Imagens\Moveis\" />
+  </ItemGroup>
+
 </Project>
