@@ -4,6 +4,7 @@ using BlazorShop.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.IO.Compression;
 
 namespace BlazorShop.Api.Controllers;
 
@@ -25,7 +26,7 @@ public class CarrinhoCompraController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{usuarioID}/GetItens")]
+    [Route("{usuarioId}/GetItens")]
     public async Task<ActionResult<IEnumerable<CarrinhoItemDto>>> GetItens(string usuarioId)
     {
         try
@@ -78,6 +79,35 @@ public class CarrinhoCompraController : ControllerBase
         catch (Exception ex)
         {
             logger.LogError($"## Erro ao obter item ={id} do carrinho");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<CarrinhoItemDto>> PostItem([FromBody]
+    CarrinhoItemAdicionaDto carrinhotItemAdicionaDto)               
+    {
+        try
+        {
+            var novoCarrinhoItem = await carrinhoCompraRepo.AdicionaItem(carrinhotItemAdicionaDto);
+            if (novoCarrinhoItem == null)
+            {
+                return NoContent(); //Status 204
+            }
+
+            var produto = await produtoRepo.GetItem(novoCarrinhoItem.ProdutoId);
+            if (produto == null)
+            {
+                throw new Exception($"Produto não localizado (Id:({carrinhotItemAdicionaDto.ProdutoId}))");
+            }
+
+            var novoCarrinhoItemDto = novoCarrinhoItem.ConverterCarrinhoItemParaDto(produto);
+            return CreatedAtAction(nameof(GetItem), new {id = novoCarrinhoItemDto.Id},
+                novoCarrinhoItemDto);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("## Erro criar um novo item no carrinho");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
