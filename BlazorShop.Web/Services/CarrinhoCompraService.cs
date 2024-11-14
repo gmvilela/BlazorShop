@@ -46,7 +46,6 @@ public class CarrinhoCompraService : ICarrinhoCompraService
             throw;
         }
     }
-
     public async Task<List<CarrinhoItemDto>> GetItens(string usuarioId)
     {
         try
@@ -72,4 +71,22 @@ public class CarrinhoCompraService : ICarrinhoCompraService
             throw;
         }
     }
+
+    public async Task<CarrinhoItemDto> DeletaItem(int id)
+    {
+        try
+        {
+            var response = await httpClient.DeleteAsync($"api/CarrinhoCompra/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<CarrinhoItemDto>();
+            }
+            return default(CarrinhoItemDto);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
 }

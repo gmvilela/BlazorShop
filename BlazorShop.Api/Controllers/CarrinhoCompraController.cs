@@ -112,5 +112,30 @@ public class CarrinhoCompraController : ControllerBase
         }
     }
 
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<CarrinhoItemDto>> DeleteItem(int id)
+    {
+        try
+        {
+            var carrinhoItem = await carrinhoCompraRepo.DeletaItem(id);
 
+            if (carrinhoItem == null)
+            {
+                return NotFound();
+            }
+
+            var produto = await produtoRepo.GetItem(carrinhoItem.ProdutoId);
+
+            if (produto is null)
+                return NotFound();
+
+            var carinhoItemDto = carrinhoItem.ConverterCarrinhoItemParaDto(produto);
+            return Ok(carinhoItemDto);
+            
+        }
+        catch (Exception e)
+        { 
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }   
+    }
 }
